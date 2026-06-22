@@ -85,7 +85,10 @@ function scheduleSave(fUniver) {
   clearTimeout(_saveTimer)
   _saveTimer = setTimeout(() => {
     const snapshot = fUniver.getActiveWorkbook()?.getSnapshot()
-    if (snapshot) store.persistSnapshot(snapshot)
+    if (snapshot) {
+      store.persistSnapshot(snapshot)
+      store.markClean()   // persisted to localStorage → show "Saved"
+    }
   }, 1500)
 }
 
