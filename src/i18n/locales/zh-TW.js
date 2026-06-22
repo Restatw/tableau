@@ -4,6 +4,8 @@ export default {
     new: '新建',
     import: '匯入',
     export: '匯出',
+    undo: '復原',
+    redo: '重做',
     saved: '已儲存',
     unsaved: '未儲存',
   },

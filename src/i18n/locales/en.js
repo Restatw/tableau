@@ -4,6 +4,8 @@ export default {
     new: 'New',
     import: 'Import',
     export: 'Export',
+    undo: 'Undo',
+    redo: 'Redo',
     saved: 'Saved',
     unsaved: 'Unsaved',
   },

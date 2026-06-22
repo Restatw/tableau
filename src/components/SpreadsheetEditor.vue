@@ -120,7 +120,13 @@ onMounted(() => {
   store.setFUniver(fUniver)
   store.setUniverRaw(univerInstance, UniverInstanceType)
 
+  // Ignore commands fired during Univer's own initialization cycle.
+  // setTimeout(0) lets the current sync + microtask queue drain first.
+  let isReady = false
+  setTimeout(() => { isReady = true }, 0)
+
   fUniver.onCommandExecuted(() => {
+    if (!isReady) return
     store.markDirty()
     scheduleSave(fUniver)
   })
