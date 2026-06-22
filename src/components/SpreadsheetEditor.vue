@@ -120,20 +120,28 @@ onMounted(() => {
   store.setFUniver(fUniver)
   store.setUniverRaw(univerInstance, UniverInstanceType)
 
-  // CommandType: COMMAND=0 (user action, enters undo stack)
-  //              OPERATION=1 (Univer internal, e.g. scroll/render)
+  // CommandType: COMMAND=0 (user action → enters undo stack)
+  //              OPERATION=1 (Univer internal: scroll, selection, render)
   //              MUTATION=2  (Univer internal low-level)
-  // Only COMMAND(0) should mark the document dirty.
-  // Also skip the very first async init wave with a short guard.
-  let isReady = false
-  setTimeout(() => { isReady = true }, 300)
+  //
+  // Strategy:
+  //  - scheduleSave runs for ALL COMMAND(0) immediately (localStorage always up-to-date)
+  //  - markDirty is gated by `isReadyForDirty` to avoid false "Unsaved" on init
+  //  - After 1 s we forcibly reset isDirty (clears any stray init commands that
+  //    slipped through) and then open the gate for real user edits.
+  let isReadyForDirty = false
 
   fUniver.onCommandExecuted((cmd) => {
-    if (!isReady) return
-    if (cmd.type === 1 || cmd.type === 2) return   // skip OPERATION / MUTATION
+    if (cmd.type === 1 || cmd.type === 2) return   // always skip OPERATION / MUTATION
+    scheduleSave(fUniver)                           // always persist to localStorage
+    if (!isReadyForDirty) return
     store.markDirty()
-    scheduleSave(fUniver)
   })
+
+  setTimeout(() => {
+    store.markClean()       // discard any dirty state caused by init commands
+    isReadyForDirty = true  // from now on, user edits properly mark dirty
+  }, 1000)
 })
 
 onBeforeUnmount(() => {
