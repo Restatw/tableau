@@ -116,6 +116,10 @@ body,
   background: #fce8e8;
 }
 
+.btn-icon {
+  padding: 6px 8px;
+}
+
 /* Layout */
 .app-layout {
   display: flex;

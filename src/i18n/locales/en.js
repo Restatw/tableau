@@ -4,7 +4,7 @@ export default {
     new: 'New',
     import: 'Import',
     export: 'Export',
-    saved: 'Saved',
+saved: 'Saved',
     unsaved: 'Unsaved',
   },
   dialog: {

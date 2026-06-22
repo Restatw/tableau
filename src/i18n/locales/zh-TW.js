@@ -4,7 +4,7 @@ export default {
     new: '新建',
     import: '匯入',
     export: '匯出',
-    saved: '已儲存',
+saved: '已儲存',
     unsaved: '未儲存',
   },
   dialog: {

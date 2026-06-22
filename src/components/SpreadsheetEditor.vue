@@ -79,6 +79,18 @@ const LOCALES = {
 }
 
 let univerInstance = null
+let _saveTimer    = null
+
+function scheduleSave(fUniver) {
+  clearTimeout(_saveTimer)
+  _saveTimer = setTimeout(() => {
+    const snapshot = fUniver.getActiveWorkbook()?.getSnapshot()
+    if (snapshot) {
+      store.persistSnapshot(snapshot)
+      store.markClean()   // persisted to localStorage → show "Saved"
+    }
+  }, 1500)
+}
 
 onMounted(() => {
   univerInstance = new Univer({
@@ -87,12 +99,11 @@ onMounted(() => {
     locales: LOCALES,
   })
 
-  // Plugin registration order matters
   univerInstance.registerPlugin(UniverRenderEnginePlugin)
   univerInstance.registerPlugin(UniverFormulaEnginePlugin)
 
   univerInstance.registerPlugin(UniverUIPlugin, {
-    container: 'univer-container',  // ID string, not DOM ref
+    container: 'univer-container',
   })
 
   univerInstance.registerPlugin(UniverDocsPlugin, { hasScroll: false })
@@ -104,17 +115,40 @@ onMounted(() => {
   univerInstance.registerPlugin(UniverSheetsFormulaUIPlugin)
   univerInstance.registerPlugin(UniverSheetsNumfmtPlugin)
 
-  univerInstance.createUnit(UniverInstanceType.UNIVER_SHEET, blankSnapshot())
+  // Load persisted snapshot from localStorage, fall back to blank workbook
+  const initSnapshot = store.loadSnapshot() ?? blankSnapshot()
+  univerInstance.createUnit(UniverInstanceType.UNIVER_SHEET, initSnapshot)
 
   const fUniver = FUniver.newAPI(univerInstance)
   store.setFUniver(fUniver)
   store.setUniverRaw(univerInstance, UniverInstanceType)
 
-  // Mark dirty on any user mutation
-  fUniver.onCommandExecuted(() => store.markDirty())
+  // CommandType: COMMAND=0 (user action → enters undo stack)
+  //              OPERATION=1 (Univer internal: scroll, selection, render)
+  //              MUTATION=2  (Univer internal low-level)
+  //
+  // Strategy:
+  //  - scheduleSave runs for ALL COMMAND(0) immediately (localStorage always up-to-date)
+  //  - markDirty is gated by `isReadyForDirty` to avoid false "Unsaved" on init
+  //  - After 1 s we forcibly reset isDirty (clears any stray init commands that
+  //    slipped through) and then open the gate for real user edits.
+  let isReadyForDirty = false
+
+  fUniver.onCommandExecuted((cmd) => {
+    if (cmd.type === 1 || cmd.type === 2) return   // always skip OPERATION / MUTATION
+    scheduleSave(fUniver)                           // always persist to localStorage
+    if (!isReadyForDirty) return
+    store.markDirty()
+  })
+
+  setTimeout(() => {
+    store.markClean()       // discard any dirty state caused by init commands
+    isReadyForDirty = true  // from now on, user edits properly mark dirty
+  }, 1000)
 })
 
 onBeforeUnmount(() => {
+  clearTimeout(_saveTimer)
   univerInstance?.dispose?.()
   univerInstance = null
   store.setFUniver(null)
