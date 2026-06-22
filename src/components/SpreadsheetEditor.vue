@@ -79,6 +79,15 @@ const LOCALES = {
 }
 
 let univerInstance = null
+let _saveTimer    = null
+
+function scheduleSave(fUniver) {
+  clearTimeout(_saveTimer)
+  _saveTimer = setTimeout(() => {
+    const snapshot = fUniver.getActiveWorkbook()?.getSnapshot()
+    if (snapshot) store.persistSnapshot(snapshot)
+  }, 1500)
+}
 
 onMounted(() => {
   univerInstance = new Univer({
@@ -87,12 +96,11 @@ onMounted(() => {
     locales: LOCALES,
   })
 
-  // Plugin registration order matters
   univerInstance.registerPlugin(UniverRenderEnginePlugin)
   univerInstance.registerPlugin(UniverFormulaEnginePlugin)
 
   univerInstance.registerPlugin(UniverUIPlugin, {
-    container: 'univer-container',  // ID string, not DOM ref
+    container: 'univer-container',
   })
 
   univerInstance.registerPlugin(UniverDocsPlugin, { hasScroll: false })
@@ -104,17 +112,22 @@ onMounted(() => {
   univerInstance.registerPlugin(UniverSheetsFormulaUIPlugin)
   univerInstance.registerPlugin(UniverSheetsNumfmtPlugin)
 
-  univerInstance.createUnit(UniverInstanceType.UNIVER_SHEET, blankSnapshot())
+  // Load persisted snapshot from localStorage, fall back to blank workbook
+  const initSnapshot = store.loadSnapshot() ?? blankSnapshot()
+  univerInstance.createUnit(UniverInstanceType.UNIVER_SHEET, initSnapshot)
 
   const fUniver = FUniver.newAPI(univerInstance)
   store.setFUniver(fUniver)
   store.setUniverRaw(univerInstance, UniverInstanceType)
 
-  // Mark dirty on any user mutation
-  fUniver.onCommandExecuted(() => store.markDirty())
+  fUniver.onCommandExecuted(() => {
+    store.markDirty()
+    scheduleSave(fUniver)
+  })
 })
 
 onBeforeUnmount(() => {
+  clearTimeout(_saveTimer)
   univerInstance?.dispose?.()
   univerInstance = null
   store.setFUniver(null)

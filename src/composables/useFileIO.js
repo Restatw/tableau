@@ -121,14 +121,16 @@ function blankSnapshot() {
 // ─── Public composable ────────────────────────────────────────────────────────
 export function useFileIO() {
   /**
-   * Open file picker, parse with SheetJS, reload Univer with parsed data.
+   * Open file picker, parse with SheetJS, reload Univer with parsed data,
+   * then immediately persist snapshot to localStorage so a refresh won't lose the import.
    *
    * @param {object} fUniver        FUniver facade instance
    * @param {object} univerRaw      raw Univer instance (for createUnit)
    * @param {object} UniverInstanceType
+   * @param {function} persistSnapshot  store.persistSnapshot
    * @returns {Promise<string>}     resolved filename
    */
-  async function importFile(fUniver, univerRaw, UniverInstanceType) {
+  async function importFile(fUniver, univerRaw, UniverInstanceType, persistSnapshot) {
     return new Promise((resolve, reject) => {
       const input = document.createElement('input')
       input.type  = 'file'
@@ -139,14 +141,16 @@ export function useFileIO() {
         if (!file) return reject(new Error('No file selected'))
 
         try {
-          const buf  = await file.arrayBuffer()
+          const buf    = await file.arrayBuffer()
           const xlsxWb = XLSX.read(buf, { type: 'array', raw: true })
           const snapshot = buildSnapshot(xlsxWb)
 
-          // Dispose current workbook, recreate with imported data
           const wbId = fUniver.getActiveWorkbook()?.getId()
           if (wbId) fUniver.disposeUnit(wbId)
           univerRaw.createUnit(UniverInstanceType.UNIVER_SHEET, snapshot)
+
+          // Persist immediately — don't wait for the debounce
+          persistSnapshot?.(snapshot)
 
           resolve(file.name)
         } catch (err) {

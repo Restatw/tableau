@@ -99,7 +99,12 @@ function onLocaleChange(e) {
 async function onImport() {
   if (!store.funiverRef || !store.univerRaw) return
   try {
-    const name = await importFile(store.funiverRef, store.univerRaw, store.univerInstanceType)
+    const name = await importFile(
+      store.funiverRef,
+      store.univerRaw,
+      store.univerInstanceType,
+      store.persistSnapshot,
+    )
     store.setFileName(name)
     store.markClean()
     success(t('toast.imported', { name }))
