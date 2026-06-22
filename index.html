@@ -1,10 +1,47 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Tableau — Web Spreadsheet</title>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="description" content="Standalone web spreadsheet — edit, import and export Excel files in the browser." />
+
+  <!-- Theme colour (browser chrome / Android) -->
+  <meta name="theme-color" content="#1a73e8" />
+
+  <!-- ── iOS / Safari ──────────────────────────────────────────────────── -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Tableau" />
+
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-touch-icon-120x120.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-touch-icon-152x152.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/icons/apple-touch-icon-167x167.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+
+  <!-- iOS splash screens (generated via maskable icon) -->
+  <meta name="apple-touch-startup-image" content="/icons/maskable-512x512.png" />
+
+  <!-- ── Windows / Edge ────────────────────────────────────────────────── -->
+  <meta name="msapplication-TileColor" content="#1a73e8" />
+  <meta name="msapplication-TileImage" content="/icons/mstile-144x144.png" />
+  <meta name="msapplication-square70x70logo"   content="/icons/icon-72x72.png" />
+  <meta name="msapplication-square150x150logo" content="/icons/icon-152x152.png" />
+  <meta name="msapplication-wide310x150logo"   content="/icons/icon-384x384.png" />
+  <meta name="msapplication-square310x310logo" content="/icons/mstile-270x270.png" />
+
+  <!-- ── Favicons ──────────────────────────────────────────────────────── -->
+  <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+
+  <!-- ── Open Graph (link previews) ───────────────────────────────────── -->
+  <meta property="og:title"       content="Tableau — Web Spreadsheet" />
+  <meta property="og:description" content="Standalone web spreadsheet — edit, import and export Excel files in the browser." />
+  <meta property="og:image"       content="/icons/icon-512x512.png" />
+  <meta property="og:type"        content="website" />
+
 </head>
 <body>
   <div id="app"></div>

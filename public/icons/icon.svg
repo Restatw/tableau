@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" fill="#1a73e8"/>
+  <!-- Spreadsheet grid -->
+  <rect x="96" y="96" width="320" height="320" rx="16" fill="#fff" opacity="0.15"/>
+  <!-- Header row -->
+  <rect x="96" y="96" width="320" height="72" rx="16" fill="#fff" opacity="0.25"/>
+  <rect x="96" y="152" width="320" height="16" rx="0" fill="#fff" opacity="0.1"/>
+  <!-- Column dividers -->
+  <rect x="202" y="96" width="3" height="320" fill="#fff" opacity="0.15"/>
+  <rect x="308" y="96" width="3" height="320" fill="#fff" opacity="0.15"/>
+  <!-- Row dividers -->
+  <rect x="96" y="200" width="320" height="3" fill="#fff" opacity="0.15"/>
+  <rect x="96" y="272" width="320" height="3" fill="#fff" opacity="0.15"/>
+  <rect x="96" y="344" width="320" height="3" fill="#fff" opacity="0.15"/>
+  <!-- Cell highlights (simulated data) -->
+  <rect x="112" y="212" width="76" height="46" rx="6" fill="#fff" opacity="0.3"/>
+  <rect x="218" y="212" width="76" height="46" rx="6" fill="#fff" opacity="0.2"/>
+  <rect x="218" y="284" width="76" height="46" rx="6" fill="#4caf50" opacity="0.8"/>
+  <rect x="324" y="284" width="76" height="46" rx="6" fill="#fff" opacity="0.2"/>
+  <rect x="112" y="356" width="76" height="46" rx="6" fill="#fff" opacity="0.2"/>
+  <rect x="324" y="212" width="76" height="46" rx="6" fill="#fff" opacity="0.1"/>
+  <!-- T letter overlay -->
+  <text x="256" y="148" font-family="Arial, sans-serif" font-size="52" font-weight="700"
+        fill="#fff" text-anchor="middle" dominant-baseline="middle" opacity="0.95">T</text>
+</svg>
