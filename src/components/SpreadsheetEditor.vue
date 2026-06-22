@@ -120,13 +120,17 @@ onMounted(() => {
   store.setFUniver(fUniver)
   store.setUniverRaw(univerInstance, UniverInstanceType)
 
-  // Ignore commands fired during Univer's own initialization cycle.
-  // setTimeout(0) lets the current sync + microtask queue drain first.
+  // CommandType: COMMAND=0 (user action, enters undo stack)
+  //              OPERATION=1 (Univer internal, e.g. scroll/render)
+  //              MUTATION=2  (Univer internal low-level)
+  // Only COMMAND(0) should mark the document dirty.
+  // Also skip the very first async init wave with a short guard.
   let isReady = false
-  setTimeout(() => { isReady = true }, 0)
+  setTimeout(() => { isReady = true }, 300)
 
-  fUniver.onCommandExecuted(() => {
+  fUniver.onCommandExecuted((cmd) => {
     if (!isReady) return
+    if (cmd.type === 1 || cmd.type === 2) return   // skip OPERATION / MUTATION
     store.markDirty()
     scheduleSave(fUniver)
   })

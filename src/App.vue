@@ -106,8 +106,9 @@ const { importFile, exportFile, blankSnapshot } = useFileIO()
 const { toasts, success, error } = useToast()
 
 // ── Undo / Redo ───────────────────────────────────────────────────────────────
-function onUndo() { store.funiverRef?.undo() }
-function onRedo() { store.funiverRef?.redo() }
+// executeCommand inside undo/redo is async — must await to avoid race conditions
+async function onUndo() { await store.funiverRef?.undo() }
+async function onRedo() { await store.funiverRef?.redo() }
 
 // ── Language switch ───────────────────────────────────────────────────────────
 function onLocaleChange(e) {
